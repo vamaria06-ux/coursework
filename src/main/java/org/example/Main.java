@@ -1,6 +1,9 @@
 package org.example;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.http.ApiHttpClient;
+import org.example.mapper.WeatherMapper;
+import org.example.model.DataRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,12 +20,16 @@ public class Main {
 
         try (HttpClient client = HttpClient.newHttpClient()) {
             ApiHttpClient apiClient = new ApiHttpClient((client));
+            WeatherMapper weatherMapper = new WeatherMapper(new ObjectMapper());
 
             logger.info("Requesting weather data");
 
             String json = apiClient.get(url);
+            DataRecord record = weatherMapper.map(json);
+
             logger.info("Weather data received successfully");
-            System.out.println(json);
+
+            System.out.println(record);
         } catch (IOException e) {
             logger.error("Failed to request weather data", e);
         } catch (InterruptedException e) {
