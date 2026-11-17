@@ -22,12 +22,9 @@ public class Main {
 
             logger.info("Available sources: {}", registry.getAvailableSources());
 
-            DataSource source = registry.getSource("open-meteo");
+            DataSource source = registry.getSource("open-library");
 
-            Map<String, String> parameters = Map.of(
-                    "latitude", "59.93",
-                    "longitude", "30.31"
-            );
+            Map<String, String> parameters = Map.of("q", "harry potter");
 
             logger.info("Requesting data from {}", source.getName());
 
