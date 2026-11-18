@@ -22,9 +22,11 @@ public class Main {
 
             logger.info("Available sources: {}", registry.getAvailableSources());
 
-            DataSource source = registry.getSource("open-library");
+            DataSource source = registry.getSource("rick-morty");
 
-            Map<String, String> parameters = Map.of("q", "harry potter");
+            Map<String, String> parameters = Map.of(
+                    "name", "morty"
+            );
 
             logger.info("Requesting data from {}", source.getName());
 
