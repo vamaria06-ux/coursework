@@ -5,6 +5,7 @@ import org.example.http.ApiHttpClient;
 import org.example.mapper.BookMapper;
 import org.example.mapper.CharacterMapper;
 import org.example.mapper.WeatherMapper;
+import org.example.model.DataRecord;
 import org.example.registry.SourceRegistry;
 import org.example.source.BookSource;
 import org.example.source.CharacterSource;
@@ -13,6 +14,7 @@ import org.example.source.WeatherSource;
 import org.example.aggregation.DataAggregator;
 import org.example.storage.DataStorage;
 import org.example.storage.JsonStorage;
+import org.example.storage.CsvStorage;
 
 import java.net.http.HttpClient;
 import java.util.List;
@@ -40,5 +42,9 @@ public class ApplicationFactory {
 
     public DataStorage createJsonStorage(Path path) {
         return new JsonStorage(path, new ObjectMapper());
+    }
+
+    public DataStorage createCsvStorage(Path path) {
+        return new CsvStorage(path);
     }
 }

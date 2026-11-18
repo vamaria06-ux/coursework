@@ -52,13 +52,13 @@ public class Main {
 
             logger.info("Aggregation completed: {} records", records.size());
 
-            DataStorage storage = factory.createJsonStorage(Path.of("data", "result.json"));
+            DataStorage storage = factory.createCsvStorage(Path.of("data", "results.csv"));
 
             storage.save(records, WriteMode.OVERWRITE);
-            logger.info("Saved {} records to JSON", records.size());
+            logger.info("Saved {} records to CSV", records.size());
 
             List<DataRecord> savedRecords = storage.readAll();
-            logger.info("Read {} records from JSON", savedRecords.size());
+            logger.info("Read {} records from CSV", savedRecords.size());
 
             for (DataRecord record : savedRecords) {
                 System.out.println(record);
