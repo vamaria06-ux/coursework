@@ -1,9 +1,10 @@
 package org.example;
 
+import org.example.aggregation.DataAggregator;
 import org.example.config.ApplicationFactory;
 import org.example.model.DataRecord;
+import org.example.model.PollRequest;
 import org.example.registry.SourceRegistry;
-import org.example.source.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,31 +20,46 @@ public class Main {
         try (HttpClient client = HttpClient.newHttpClient()) {
             ApplicationFactory factory = new ApplicationFactory();
             SourceRegistry registry = factory.createRegistry(client);
+            DataAggregator aggregator = factory.createAggregator(registry);
 
-            logger.info("Available sources: {}", registry.getAvailableSources());
-
-            DataSource source = registry.getSource("rick-morty");
-
-            Map<String, String> parameters = Map.of(
-                    "name", "morty"
+            List<PollRequest> requests = List.of(
+                    new PollRequest(
+                            "open-meteo",
+                            Map.of(
+                                    "latitude", "59.93",
+                                    "longitude", "30.31"
+                            )
+                    ),
+                    new PollRequest(
+                            "open-library",
+                            Map.of("q", "harry potter")
+                    ),
+                    new PollRequest(
+                            "rick-morty",
+                            Map.of(
+                                    "name", "morty",
+                                    "status", "alive"
+                            )
+                    )
             );
 
-            logger.info("Requesting data from {}", source.getName());
+            logger.info("Starting aggregation");
 
-            List<DataRecord> records = source.fetch(parameters);
-            logger.info("Received {} records", records.size());
+            List<DataRecord> records = aggregator.aggregate(requests);
+
+            logger.info("Aggregation completed: {} records", records.size());
 
             for (DataRecord record : records) {
                 System.out.println(record);
             }
 
         } catch (IOException e) {
-            logger.error("Failed to fetch data", e);
+            logger.error("Aggregation failed", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.error("Request interrupted", e);
+            logger.error("Aggregation interrupted", e);
         } catch (IllegalArgumentException e) {
-            logger.error("Invalid source or parameters", e);
+            logger.error("Invalid aggregation  parameters", e);
         }
     }
 }

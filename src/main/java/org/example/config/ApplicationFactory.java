@@ -10,6 +10,7 @@ import org.example.source.BookSource;
 import org.example.source.CharacterSource;
 import org.example.source.DataSource;
 import org.example.source.WeatherSource;
+import org.example.aggregation.DataAggregator;
 
 import java.net.http.HttpClient;
 import java.util.List;
@@ -28,5 +29,9 @@ public class ApplicationFactory {
         DataSource characterSource = new CharacterSource(apiClient, characterMapper);
 
         return new SourceRegistry(List.of(weatherSource, bookSource, characterSource));
+    }
+
+    public DataAggregator createAggregator(SourceRegistry registry) {
+        return new DataAggregator(registry);
     }
 }
