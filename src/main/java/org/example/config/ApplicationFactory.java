@@ -11,9 +11,12 @@ import org.example.source.CharacterSource;
 import org.example.source.DataSource;
 import org.example.source.WeatherSource;
 import org.example.aggregation.DataAggregator;
+import org.example.storage.DataStorage;
+import org.example.storage.JsonStorage;
 
 import java.net.http.HttpClient;
 import java.util.List;
+import java.nio.file.Path;
 
 public class ApplicationFactory {
     public SourceRegistry createRegistry(HttpClient httpClient) {
@@ -33,5 +36,9 @@ public class ApplicationFactory {
 
     public DataAggregator createAggregator(SourceRegistry registry) {
         return new DataAggregator(registry);
+    }
+
+    public DataStorage createJsonStorage(Path path) {
+        return new JsonStorage(path, new ObjectMapper());
     }
 }

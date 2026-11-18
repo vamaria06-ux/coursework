@@ -5,6 +5,8 @@ import org.example.config.ApplicationFactory;
 import org.example.model.DataRecord;
 import org.example.model.PollRequest;
 import org.example.registry.SourceRegistry;
+import org.example.storage.DataStorage;
+import org.example.storage.WriteMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.util.List;
 import java.util.Map;
+import java.nio.file.Path;
 
 public class Main {
     private  static final Logger logger =  LoggerFactory.getLogger(Main.class);
@@ -49,7 +52,15 @@ public class Main {
 
             logger.info("Aggregation completed: {} records", records.size());
 
-            for (DataRecord record : records) {
+            DataStorage storage = factory.createJsonStorage(Path.of("data", "result.json"));
+
+            storage.save(records, WriteMode.OVERWRITE);
+            logger.info("Saved {} records to JSON", records.size());
+
+            List<DataRecord> savedRecords = storage.readAll();
+            logger.info("Read {} records from JSON", savedRecords.size());
+
+            for (DataRecord record : savedRecords) {
                 System.out.println(record);
             }
 
