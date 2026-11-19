@@ -1,76 +1,40 @@
 package org.example;
 
-import org.example.aggregation.DataAggregator;
+import org.example.cli.CliApplication;
 import org.example.config.ApplicationFactory;
-import org.example.model.DataRecord;
-import org.example.model.PollRequest;
 import org.example.registry.SourceRegistry;
-import org.example.storage.DataStorage;
-import org.example.storage.WriteMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
-import java.util.List;
-import java.util.Map;
-import java.nio.file.Path;
 
 public class Main {
     private  static final Logger logger =  LoggerFactory.getLogger(Main.class);
     public static void main(String[] args) {
+        int exitCode = 0;
 
         try (HttpClient client = HttpClient.newHttpClient()) {
             ApplicationFactory factory = new ApplicationFactory();
             SourceRegistry registry = factory.createRegistry(client);
-            DataAggregator aggregator = factory.createAggregator(registry);
+            CliApplication application = factory.createCliApplication(registry);
 
-            List<PollRequest> requests = List.of(
-                    new PollRequest(
-                            "open-meteo",
-                            Map.of(
-                                    "latitude", "59.93",
-                                    "longitude", "30.31"
-                            )
-                    ),
-                    new PollRequest(
-                            "open-library",
-                            Map.of("q", "harry potter")
-                    ),
-                    new PollRequest(
-                            "rick-morty",
-                            Map.of(
-                                    "name", "morty",
-                                    "status", "alive"
-                            )
-                    )
-            );
+            application.run(args);
 
-            logger.info("Starting aggregation");
-
-            List<DataRecord> records = aggregator.aggregate(requests);
-
-            logger.info("Aggregation completed: {} records", records.size());
-
-            DataStorage storage = factory.createCsvStorage(Path.of("data", "results.csv"));
-
-            storage.save(records, WriteMode.OVERWRITE);
-            logger.info("Saved {} records to CSV", records.size());
-
-            List<DataRecord> savedRecords = storage.readAll();
-            logger.info("Read {} records from CSV", savedRecords.size());
-
-            for (DataRecord record : savedRecords) {
-                System.out.println(record);
-            }
-
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid arguments: {}", e.getMessage());
+            exitCode = 2;
         } catch (IOException e) {
-            logger.error("Aggregation failed", e);
+            logger.error("I/O operation failed", e);
+            exitCode = 1;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.error("Aggregation interrupted", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("Invalid aggregation  parameters", e);
+            logger.error("Operation interrupted", e);
+            exitCode = 130;
+        }
+
+        if (exitCode != 0) {
+            System.exit(exitCode);
         }
     }
 }
