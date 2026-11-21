@@ -11,7 +11,7 @@ import java.net.http.HttpClient;
 
 public class Main {
     private  static final Logger logger =  LoggerFactory.getLogger(Main.class);
-    public static void main(String[] args) {
+    static void main(String[] args) {
         int exitCode = 0;
 
         try (HttpClient client = HttpClient.newHttpClient()) {

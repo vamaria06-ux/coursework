@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class CsvStorage implements DataStorage{
@@ -70,7 +69,10 @@ public class CsvStorage implements DataStorage{
          List<DataRecord> records = new ArrayList<>();
 
          try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
-              CSVParser parser = new CSVParser(reader, format)) {
+              CSVParser parser = CSVParser.builder()
+                      .setReader(reader)
+                      .setFormat(format)
+                      .get() ){
              if (!parser.getHeaderNames().equals(HEADERS)) {
                  throw new IOException("Invalid CSV headers");
              }

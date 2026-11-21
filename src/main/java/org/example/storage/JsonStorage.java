@@ -44,7 +44,7 @@ public class JsonStorage implements DataStorage{
             return List.of();
         }
         return objectMapper.readValue(
-                path.toFile(), new TypeReference<List<DataRecord>>() {}
+                path.toFile(), new TypeReference<>() {}
         );
     }
 

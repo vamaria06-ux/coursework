@@ -175,7 +175,7 @@ public class CliApplication {
     private String optional(
             Map<String, List<String>> options, String name) {
         List<String> values = options.get(name);
-        return values == null ? null : values.get(0);
+        return values == null ? null : values.getFirst();
     }
 
     private void validateOptions(Map<String, List<String>> options,
